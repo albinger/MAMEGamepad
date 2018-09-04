@@ -24,23 +24,21 @@
 
 const int numbutts = 8;  //heh, he said butts...
 
-//int buttons[10] = {2,3,5,13,18,19,23,6,9,10};
+
 int buttons[8] = {2,3,13,18,19,22,21,20};
 
 int keys[8]= {  
   64,  //1  button7
   128, //2  button8
-  32,  //3 button6)
-  16,  //4 button5)
-  4,   //5 button3)
-  1,   //6 button1
-  2,   //7 button2
-  8    //8 button4
+  32,  //3  button6
+  16,  //4  button5
+  4,   //5  button3
+  1,   //6  button1
+  2,   //7  button2
+  8    //8  button4
   };
 
 int idle=1;
-unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
 
 // Create the bluefruit object using SPI
 Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
@@ -85,7 +83,7 @@ void loop(void)
   for(i=0;i<numbutts;i++){ 
     state = digitalRead(buttons[i]) ? 0:1; // read all buttons one time
     {
-       if (state)  // && (millis() - lastDebounceTime > debounceDelay)) 
+       if (state)  
        {
         butts +=keys[i];    
        }  
@@ -97,9 +95,9 @@ void loop(void)
       sprintf(thestring,"AT+BLEHIDGAMEPAD=%01d,%01d,0x%02d",x,y,butts); 
       ble.println(thestring);         //send the codes, something was pressed
       idle = 0;              // we are not idle
-    }else if(idle)   //modifiers are pressed but no other keys generated output
+    }else if(!idle)   
     {
-      ble.println("AT+BLEHIDGAMEPAD=0,0,0x00");
+      ble.println("AT+BLEHIDGAMEPAD=0,0,0x00");  //send the all clear
       idle = 1;                   //we are idle
     }
   delay(100);    //slow down son!
