@@ -92,7 +92,7 @@ void loop(void)
       
   if(butts || x || y)
     {
-      sprintf(thestring,"AT+BLEHIDGAMEPAD=%01d,%01d,0x%02d",x,y,butts); 
+      sprintf(thestring,"AT+BLEHIDGAMEPAD=%01d,%01d,0x%02x",x,y,butts); 
       ble.println(thestring);         //send the codes, something was pressed
       idle = 0;              // we are not idle
     }else if(!idle)   
