@@ -73,7 +73,7 @@ void loop(void)
   int state=0;
   int i = 0;
   int x, y = 0;
-  char thestring[6];
+  char thestring[9];
 
   y=digitalRead(23) ? 0:1; // up
   y+=digitalRead(6) ? 0:-1;  // down
@@ -92,7 +92,8 @@ void loop(void)
       
   if(butts || x || y)
     {
-      sprintf(thestring,"AT+BLEHIDGAMEPAD=%01d,%01d,0x%02x",x,y,butts); 
+      sprintf(thestring,"%01d,%01d,0x%02x",x,y,butts); 
+      bld.print("AT+BLEHIDGAMEPAD=");
       ble.println(thestring);         //send the codes, something was pressed
       idle = 0;              // we are not idle
     }else if(!idle)   
