@@ -28,14 +28,14 @@ const int numbutts = 8;  //heh, he said butts...
 int buttons[8] = {2,3,13,18,19,22,21,20};
 
 int keys[8]= {  
-  64,  //1  button7
-  128, //2  button8
-  32,  //3  button6
-  16,  //4  button5
-  4,   //5  button3
-  1,   //6  button1
-  2,   //7  button2
-  8    //8  button4
+  64,  //1  button7  2
+  128, //2  button8  3
+  32,  //3  button6  13
+  16,  //4  button5  18
+  4,   //5  button3  19
+  1,   //6  button1  22
+  2,   //7  button2  21
+  8    //8  button4  20
   };
 
 int idle=1;
@@ -51,9 +51,13 @@ void setup(void)
   //ble.factoryReset();
   ble.echo(false);
 
-  //ble.info();
+  ble.info();
   ble.sendCommandCheckOK(F( "AT+GAPDEVNAME=MAME Gamepad" ));
-  ble.sendCommandCheckOK(F( "AT+BLEHIDGAMEPADEN=On" ));
+  //ble.sendCommandCheckOK(F( "AT+BLEKEYBOARDEN=off"));
+  //ble.reset(); // required if we change state like the previous line
+
+  ble.sendCommandCheckOK(F( "AT+BLEHIDEN=1" ));
+  ble.sendCommandCheckOK(F( "AT+BLEHIDGAMEPADEN=1" ));
   ble.reset(); // required if we change state like the previous line
 
 // initialize the pushbutton pins as input:
@@ -75,9 +79,9 @@ void loop(void)
   int x, y = 0;
   char thestring[9];
 
-  y=digitalRead(23) ? 0:1; // up
+  x+=digitalRead(23) ? 0:1; // up
   y+=digitalRead(6) ? 0:-1;  // down
-  x+=digitalRead(6) ? 0:-1;  // left
+  x+=digitalRead(9) ? 0:-1;  // left
   x+=digitalRead(10) ? 0:1;  //right
 
   for(i=0;i<numbutts;i++){ 
@@ -93,7 +97,7 @@ void loop(void)
   if(butts || x || y)
     {
       sprintf(thestring,"%01d,%01d,0x%02x",x,y,butts); 
-      bld.print("AT+BLEHIDGAMEPAD=");
+      ble.print("AT+BLEHIDGAMEPAD=");
       ble.println(thestring);         //send the codes, something was pressed
       idle = 0;              // we are not idle
     }else if(!idle)   
@@ -101,5 +105,5 @@ void loop(void)
       ble.println("AT+BLEHIDGAMEPAD=0,0,0x00");  //send the all clear
       idle = 1;                   //we are idle
     }
-  delay(100);    //slow down son!
+  delay(15);    //slow down son!
 }
